@@ -106,7 +106,7 @@ declare(strict_types=1);
 				if ($intensity < $this->ReadPropertyInteger('DimmerMin')) {
 					$intensity = $this->ReadPropertyInteger('DimmerMin');
 				}
-				if ($this->ReadPropertyInteger('NachtAktiv') > 0 && GetValueBoolean($this->ReadPropertyInteger('NachtAktiv'))) {
+				if ($this->ReadPropertyInteger('NachtAktiv') > 0 && !GetValueBoolean($this->ReadPropertyInteger('NachtAktiv'))) {
 					$intensity = $this->ReadPropertyInteger('NachtWert');
 					$this->WriteAttributeBoolean("DimmRichtung",false); // Richtung auf hoch setzen
 				}

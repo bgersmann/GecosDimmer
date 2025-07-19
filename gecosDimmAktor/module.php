@@ -63,7 +63,7 @@ declare(strict_types=1);
 			if  (GetValueBoolean($IDOnOff)) {
 				IPS_Sleep($this->ReadPropertyInteger('DimmerDrDauer')); //Lampe ist an, warten bis lange gedrückt
 				$this->SendDebug("gecosDimmAktor", "Dimmen: Dimmer is currently ON, waiting...", 0);
-				if  (!GetValueBoolean($IDOnOff)) {
+				if  (!GetValueBoolean($IDinputTrigger)) {
 					RequestAction($IDOnOff, False); // Dimmer ausschalten
 				} else {					
 					//Ab hier dimmen:

@@ -61,8 +61,44 @@ declare(strict_types=1);
 		}
 		public function Dimmen(int $IDOnOff, int $IDIntensity, int $IDinputTrigger):void {
 			if  (GetValueBoolean($IDOnOff)) {
-				$this->SendDebug("gecosDimmAktor", "Dimmen: Dimmer is currently ON, turning it OFF", 0);
-				RequestAction($IDOnOff, False); // Dimmer ausschalten
+				IPS_Sleep($this->ReadPropertyInteger('DimmerDrDauer')); //Lampe ist an, warten bis lange gedrückt
+				$this->SendDebug("gecosDimmAktor", "Dimmen: Dimmer is currently ON, waiting...", 0);
+				if  (!GetValueBoolean($IDOnOff)) {
+					RequestAction($IDOnOff, False); // Dimmer ausschalten
+				} else {					
+					//Ab hier dimmen:
+					// Start the dimming process				
+					$gedimmt=false;
+					$intensity = GetValueInteger($IDIntensity);
+					while (GetValueBoolean($IDinputTrigger)) {
+						if (!$this->ReadAttributeBoolean("DimmRichtung")) {
+							$this->SendDebug("gecosDimmAktor", "Dimmen: Dimming in progress, current intensity: $intensity", 0);
+							// Hochdimmen
+							$intensity = $intensity + 1;
+							SetValue($IDIntensity, (int)$intensity);	
+							if ($intensity>100) {
+								$intensity = 100;
+								SetValue($IDIntensity, (int)$intensity);
+								break;
+							}
+						} else {
+							$this->SendDebug("gecosDimmAktor", "Dimmen: Dimming in progress, current intensity: $intensity", 0);
+							// Runterdimmen
+							$intensity = $intensity - 1;
+							SetValue($IDIntensity, (int)$intensity);
+							if ($intensity<$this->ReadPropertyInteger('DimmerMin')) {
+								$intensity = $this->ReadPropertyInteger('DimmerMin');
+								SetValue($IDIntensity, (int)$intensity);							
+								break;
+							}
+						}			
+						$gedimmt=true;							
+						IPS_Sleep($this->ReadPropertyInteger('DimmSchrittDauer')); // Warten bis zum nächsten Schritt
+					}
+					if ($gedimmt) {
+						$this->WriteAttributeBoolean("DimmRichtung", !$this->ReadAttributeBoolean("DimmRichtung"));				
+					}
+				}
 			} else {
 				$this->SendDebug("gecosDimmAktor", "Dimmen: Dimmer is currently OFF, turning it ON and increasing intensity", 0);				
 				$intensity = GetValueInteger($IDIntensity);

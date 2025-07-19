@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 			$vpos = 100;
 			$this->MaintainVariable( 'Intensity', $this->Translate( 'Intensity' ), 1, [ 'PRESENTATION' => VARIABLE_PRESENTATION_SLIDER, 'MAX'=>100,'MIN'=>0,'STEP_SIZE'=>1,'USAGE_TYPE'=> 2, 'SUFFIX'=> ' %' , 'ICON'=> 'lightbulb-exclamation-on'], $vpos++, 1 );
+			$this->MaintainAction("Intensity", true);
 			$inputTriggers = json_decode($this->ReadPropertyString('InputTriggers'), true);
 			$inputTriggerOkCount = 0;
 			foreach ($inputTriggers as $inputTrigger) {
@@ -75,20 +76,20 @@ declare(strict_types=1);
 							$this->SendDebug("gecosDimmAktor", "Dimmen: Dimming in progress, current intensity: $intensity", 0);
 							// Hochdimmen
 							$intensity = $intensity + 1;
-							SetValue($IDIntensity, (int)$intensity);	
+							RequestAction($IDIntensity, (int)$intensity);	
 							if ($intensity>100) {
 								$intensity = 100;
-								SetValue($IDIntensity, (int)$intensity);
+								RequestAction($IDIntensity, (int)$intensity);
 								break;
 							}
 						} else {
 							$this->SendDebug("gecosDimmAktor", "Dimmen: Dimming in progress, current intensity: $intensity", 0);
 							// Runterdimmen
 							$intensity = $intensity - 1;
-							SetValue($IDIntensity, (int)$intensity);
+							RequestAction($IDIntensity, (int)$intensity);
 							if ($intensity<$this->ReadPropertyInteger('DimmerMin')) {
 								$intensity = $this->ReadPropertyInteger('DimmerMin');
-								SetValue($IDIntensity, (int)$intensity);							
+								RequestAction($IDIntensity, (int)$intensity);							
 								break;
 							}
 						}			
@@ -109,7 +110,7 @@ declare(strict_types=1);
 					$intensity = $this->ReadPropertyInteger('NachtWert');
 					$this->WriteAttributeBoolean("DimmRichtung",false); // Richtung auf hoch setzen
 				}
-				SetValue($IDIntensity, $intensity); // Dimmer setzen
+				RequestAction($IDIntensity, $intensity); // Dimmer setzen
 				RequestAction($IDOnOff, true); // Dimmer einschalten
 				$this->SendDebug("gecosDimmAktor", "Dimmen: New intensity is $intensity", 0);
 				IPS_Sleep($this->ReadPropertyInteger('DimmerDrDauer')); // Warten bis Lange gedrückt, starte dimmen:
@@ -120,16 +121,16 @@ declare(strict_types=1);
 						if (!$this->ReadAttributeBoolean("DimmRichtung")) {
 							// Hochdimmen
 							$intensity = $intensity + 1;
-							SetValue($IDIntensity, (int)$intensity);	
+							RequestAction($IDIntensity, (int)$intensity);	
 							if ($intensity>100) {
 								$intensity = 100;
-								SetValue($IDIntensity, (int)$intensity);
+								RequestAction($IDIntensity, (int)$intensity);
 								break;
 							}
 						} else {
 							// Runterdimmen
 							$intensity = $intensity - 1;
-							SetValue($IDIntensity, (int)$intensity);
+							RequestAction($IDIntensity, (int)$intensity);
 							if ($intensity<$this->ReadPropertyInteger('DimmerMin')) {							
 								break;
 							}
@@ -143,4 +144,27 @@ declare(strict_types=1);
 				}				
 			}			
 		}
+		public function RequestAction($Ident, $Value) {
+$this->SendDebug("gecosDimmAktor", "Dimmen: New intensity is $Ident", 0);
+			switch($Ident) {
+				case "Intensity":
+					//Hier würde normalerweise eine Aktion z.B. das Schalten ausgeführt werden
+					//Ausgaben über 'echo' werden an die Visualisierung zurückgeleitet
+					$a = 100;
+					$b = 4096;
+					$x =$Value;
+					$o = 350; //Offset
+					$T = (($a+$o) * log10(2)) / (log10($b));
+					$y = pow (2, (($x+$o) / $T)) - 1;
+					RequestAction($this->ReadPropertyInteger('IDDimmer'), $y);
+					$this->SendDebug("gecosDimmAktor", "Dimmen: New intensity is $y", 0);
+					//Neuen Wert in die Statusvariable schreiben
+					SetValue($this->GetIDForIdent($Ident), $Value);					
+					break;
+				default:
+					throw new Exception("Invalid Ident");
+			}
+			
+		}
+
 	}

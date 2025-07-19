@@ -1,0 +1,12 @@
+{
+    "id": "{B04DA945-F524-6807-B7BB-89DDCEACC316}",
+    "name": "GecosDimmer",
+    "author": "B Gersmann",
+    "url": "https://github.com/bgersmann/GecosDimmer",
+    "compatibility": {
+        "version": "7.1"
+    },
+    "version": "1.0",
+    "build": 0,
+    "date": 0
+}

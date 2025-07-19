@@ -1,0 +1,90 @@
+{
+    "elements": [ {
+                    "type": "Label",
+                    "name": "DimmAktorLabel",
+                    "visible": true,
+                    "caption": "DimmAktor für GeCoS 16-PWM Module"
+                },
+                {
+            "type": "SelectVariable",
+            "name": "IDDimmer",
+            "caption": "Variable Dimmaktor",
+            "requiredAction": 1,
+            "validVariableTypes":[1,2]  
+        },
+        {
+            "type": "SelectVariable",
+            "name": "IDOnOff",
+            "caption": "Variable On/Off",
+            "requiredAction": 1,
+            "validVariableTypes":[0]
+        },
+        {
+            "type": "SelectVariable",
+            "name": "NachtAktiv",
+            "caption": "Variable Nacht (False=nacht)",
+            "requiredAction": 1,
+            "validVariableTypes":[0]
+        },
+        {
+            "type": "List",
+            "name": "InputTriggers",
+            "caption": "Input Triggers",
+            "add": true,
+            "delete": true,
+            "rowCount": 5,
+            "columns": [
+                {
+                    "name": "VariableID",
+                    "caption": "Variable",
+                    "width": "auto",
+                    "add": 0,
+                    "edit": {
+                        "type": "SelectVariable",
+                        "requiredAction": 1,
+                        "validVariableTypes":[0]
+                    }
+                },
+                {
+                    "name": "Status",
+                    "caption": "Status",
+                    "width": "100px",
+                    "add": "New"
+                }
+            ]
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Einstellungen",
+            "items": [
+                {
+                    "type": "NumberSpinner",
+                    "name": "DimmerDrDauer",
+                    "caption": "Dimmer Drück Dauer bis Start Dimmen (ms)"
+                },                
+                {
+                    "type": "NumberSpinner",
+                    "name": "DimmerMin",
+                    "caption": "Dimmer Minimum (0-100%)"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "DimmSchrittDauer",
+                    "caption": "Dimmer Schritt Dauer (ms)"
+                },
+                {
+                    "type": "NumberSpinner",
+                    "name": "NachtWert",
+                    "caption": "Nachtwert (0-100%)"
+                }
+
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "TestCenter"
+        }
+    ],
+    "status": []
+}

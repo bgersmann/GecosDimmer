@@ -1,0 +1,12 @@
+{
+    "id": "{AE282F87-51CE-1A17-A984-8B532E718003}",
+    "name": "gecosDimmAktor",
+    "type": 3,
+    "vendor": "GeDaD",
+    "aliases": [],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "GDA",
+    "url": "https://github.com/bgersmann/GecosDimmer"
+}

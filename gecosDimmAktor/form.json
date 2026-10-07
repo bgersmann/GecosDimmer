@@ -1,34 +1,34 @@
 {
-    "elements": [ {
-                    "type": "Label",
-                    "name": "DimmAktorLabel",
-                    "visible": true,
-                    "caption": "DimmAktor für GeCoS 16-PWM Module"
-                },
-                {
+    "elements": [
+        {
+            "type": "Label",
+            "name": "DimmAktorLabel",
+            "caption": "DimmAktor für GeCoS 16-PWM Module"
+        },
+        {
             "type": "SelectVariable",
             "name": "IDDimmer",
-            "caption": "Variable Dimmaktor",
+            "caption": "Variable Dimmaktor (Output_Int_X..)",
             "requiredAction": 1,
-            "validVariableTypes":[1,2]  
+            "validVariableTypes": [1, 2]
         },
         {
             "type": "SelectVariable",
             "name": "IDOnOff",
-            "caption": "Variable On/Off",
+            "caption": "Variable On/Off (Output_Bln_X..)",
             "requiredAction": 1,
-            "validVariableTypes":[0]
+            "validVariableTypes": [0]
         },
         {
             "type": "SelectVariable",
             "name": "NachtAktiv",
             "caption": "Variable Nacht (False=nacht)",
-            "validVariableTypes":[0]
+            "validVariableTypes": [0]
         },
         {
             "type": "List",
             "name": "InputTriggers",
-            "caption": "Input Triggers",
+            "caption": "Taster (Input Triggers)",
             "add": true,
             "delete": true,
             "rowCount": 5,
@@ -40,42 +40,58 @@
                     "add": 0,
                     "edit": {
                         "type": "SelectVariable",
-                        "validVariableTypes":[0]
+                        "validVariableTypes": [0]
                     }
-                },
-                {
-                    "name": "Status",
-                    "caption": "Status",
-                    "width": "100px",
-                    "add": "New"
                 }
             ]
         },
         {
+            "type": "Select",
+            "name": "ProfileID",
+            "caption": "Dimm-Profil",
+            "options": [],
+            "onChange": "IPS_RequestAction($id, 'UpdateProfileSelection', $ProfileID);"
+        },
+        {
+            "type": "Label",
+            "name": "ProfileInfo",
+            "caption": ""
+        },
+        {
             "type": "ExpansionPanel",
-            "caption": "Einstellungen",
+            "name": "IndividualSettings",
+            "caption": "Individuelle Einstellungen",
             "items": [
                 {
                     "type": "NumberSpinner",
                     "name": "DimmerDrDauer",
-                    "caption": "Dimmer Drück Dauer bis Start Dimmen (ms)"
-                },                
+                    "caption": "Dimmer Drück Dauer bis Start Dimmen",
+                    "suffix": "ms",
+                    "minimum": 0
+                },
                 {
                     "type": "NumberSpinner",
                     "name": "DimmerMin",
-                    "caption": "Dimmer Minimum (0-100%)"
+                    "caption": "Dimmer Minimum",
+                    "suffix": "%",
+                    "minimum": 0,
+                    "maximum": 100
                 },
                 {
                     "type": "NumberSpinner",
                     "name": "DimmSchrittDauer",
-                    "caption": "Dimmer Schritt Dauer (ms)"
+                    "caption": "Dimmer Schritt Dauer",
+                    "suffix": "ms",
+                    "minimum": 0
                 },
                 {
                     "type": "NumberSpinner",
                     "name": "NachtWert",
-                    "caption": "Nachtwert (0-100%)"
+                    "caption": "Nachtwert",
+                    "suffix": "%",
+                    "minimum": 0,
+                    "maximum": 100
                 }
-
             ]
         }
     ],
@@ -84,5 +100,16 @@
             "type": "TestCenter"
         }
     ],
-    "status": []
+    "status": [
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "Dimmer- oder On/Off-Variable nicht gesetzt bzw. nicht vorhanden"
+        },
+        {
+            "code": 202,
+            "icon": "error",
+            "caption": "Gewähltes Dimm-Profil wurde nicht gefunden (Standardwerte aktiv)"
+        }
+    ]
 }

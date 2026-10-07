@@ -1,67 +1,35 @@
 # gecosDimmAktor
-Beschreibung des Moduls.
 
-### Inhaltsverzeichnis
+Steuert einen Dimmausgang eines GeCoS_PWM16Out über einen oder mehrere Taster.
 
-1. [Funktionsumfang](#1-funktionsumfang)
-2. [Voraussetzungen](#2-voraussetzungen)
-3. [Software-Installation](#3-software-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#5-statusvariablen-und-profile)
-6. [WebFront](#6-webfront)
-7. [PHP-Befehlsreferenz](#7-php-befehlsreferenz)
+### Funktionsumfang
 
-### 1. Funktionsumfang
+* Kurzer Tastendruck: Ein/Aus.
+* Langer Tastendruck: Hoch-/Runterdimmen, die Richtung wechselt nach jedem Dimmvorgang.
+* Logarithmische Kennlinie: Helligkeit 0–100 % wird auf den PWM-Wert 0–4095 umgerechnet.
+* Nachtwert: Ist die Nacht-Variable `false`, wird beim Einschalten der Nachtwert genutzt.
+* Die Dimm-Parameter kommen aus einem Profil der Profilverwaltung (gecosDimmProfile) oder aus individuellen Einstellungen.
 
-*
+### Konfiguration
 
-### 2. Voraussetzungen
+Name                       | Beschreibung
+-------------------------- | ------------------
+Variable Dimmaktor         | `Output_Int_X..` des GeCoS_PWM16Out
+Variable On/Off            | `Output_Bln_X..` des GeCoS_PWM16Out
+Variable Nacht             | Optional, `false` = Nacht
+Taster                     | Boolean-Variablen der Taster
+Dimm-Profil                | Profil aus gecosDimmProfile oder „Individuell“
+Individuelle Einstellungen | Nur bei „Individuell“: Drück-Dauer, Minimum, Schritt-Dauer, Nachtwert
 
-- IP-Symcon ab Version 7.1
+Instanzen aus Version 1.x behalten ihre Einstellungen als „Individuell“.
 
-### 3. Software-Installation
+### Statusvariablen
 
-* Über den Module Store das 'gecosDimmAktor'-Modul installieren.
-* Alternativ über das Module Control folgende URL hinzufügen
+Name       | Typ     | Beschreibung
+---------- | ------- | ------------
+Helligkeit | Integer | Helligkeit 0–100 %
 
-### 4. Einrichten der Instanzen in IP-Symcon
+### PHP-Befehlsreferenz
 
- Unter 'Instanz hinzufügen' kann das 'gecosDimmAktor'-Modul mithilfe des Schnellfilters gefunden werden.  
-	- Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen)
-
-__Konfigurationsseite__:
-
-Name     | Beschreibung
--------- | ------------------
-         |
-         |
-
-### 5. Statusvariablen und Profile
-
-Die Statusvariablen/Kategorien werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
-
-#### Statusvariablen
-
-Name   | Typ     | Beschreibung
------- | ------- | ------------
-       |         |
-       |         |
-
-#### Profile
-
-Name   | Typ
------- | -------
-       |
-       |
-
-### 6. Visualisierung
-
-Die Funktionalität, die das Modul in der Visualisierung bietet.
-
-### 7. PHP-Befehlsreferenz
-
-`boolean GDA_BeispielFunktion(integer $InstanzID);`
-Erklärung der Funktion.
-
-Beispiel:
-`GDA_BeispielFunktion(12345);`
+`array GDA_GetSettings(int $InstanzID);`  
+Liefert die aktuell wirksamen Dimm-Einstellungen.

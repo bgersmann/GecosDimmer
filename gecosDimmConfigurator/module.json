@@ -1,0 +1,12 @@
+{
+    "id": "{337B14D8-4B46-49F9-852E-D670C661C721}",
+    "name": "gecosDimmConfigurator",
+    "type": 4,
+    "vendor": "GeDaD",
+    "aliases": ["GeCoS Dimmer Konfigurator"],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "GDC",
+    "url": "https://github.com/bgersmann/GecosDimmer"
+}

@@ -1,0 +1,118 @@
+{
+    "elements": [
+        {
+            "type": "Label",
+            "caption": "Globale Dimm-Profile für alle gecosDimmAktor-Instanzen. Änderungen wirken sofort auf alle Aktoren, die das Profil nutzen."
+        },
+        {
+            "type": "List",
+            "name": "Profiles",
+            "caption": "Profile",
+            "add": true,
+            "delete": true,
+            "rowCount": 8,
+            "sort": {
+                "column": "ID",
+                "direction": "ascending"
+            },
+            "columns": [
+                {
+                    "name": "ID",
+                    "caption": "ID",
+                    "width": "60px",
+                    "add": 0
+                },
+                {
+                    "name": "Name",
+                    "caption": "Name",
+                    "width": "auto",
+                    "add": "Neues Profil",
+                    "edit": {
+                        "type": "ValidationTextBox"
+                    }
+                },
+                {
+                    "name": "DimmerDrDauer",
+                    "caption": "Drück-Dauer bis Dimmen (ms)",
+                    "width": "200px",
+                    "add": 250,
+                    "edit": {
+                        "type": "NumberSpinner",
+                        "suffix": "ms",
+                        "minimum": 0
+                    }
+                },
+                {
+                    "name": "DimmSchrittDauer",
+                    "caption": "Schritt-Dauer (ms)",
+                    "width": "150px",
+                    "add": 75,
+                    "edit": {
+                        "type": "NumberSpinner",
+                        "suffix": "ms",
+                        "minimum": 0
+                    }
+                },
+                {
+                    "name": "DimmerMin",
+                    "caption": "Minimum (%)",
+                    "width": "120px",
+                    "add": 5,
+                    "edit": {
+                        "type": "NumberSpinner",
+                        "suffix": "%",
+                        "minimum": 0,
+                        "maximum": 100
+                    }
+                },
+                {
+                    "name": "NachtWert",
+                    "caption": "Nachtwert (%)",
+                    "width": "120px",
+                    "add": 30,
+                    "edit": {
+                        "type": "NumberSpinner",
+                        "suffix": "%",
+                        "minimum": 0,
+                        "maximum": 100
+                    }
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "type": "List",
+            "name": "Usage",
+            "caption": "Verwendung in DimmAktoren",
+            "rowCount": 8,
+            "add": false,
+            "delete": false,
+            "columns": [
+                {
+                    "name": "InstanceID",
+                    "caption": "ID",
+                    "width": "80px"
+                },
+                {
+                    "name": "Location",
+                    "caption": "Instanz",
+                    "width": "auto"
+                },
+                {
+                    "name": "Profile",
+                    "caption": "Profil",
+                    "width": "200px"
+                }
+            ],
+            "values": []
+        }
+    ],
+    "status": [
+        {
+            "code": 201,
+            "icon": "error",
+            "caption": "Es existiert mehr als eine Profilverwaltung - die DimmAktoren nutzen nur die erste"
+        }
+    ]
+}

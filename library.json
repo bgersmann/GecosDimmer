@@ -4,9 +4,9 @@
     "author": "B Gersmann",
     "url": "https://github.com/bgersmann/GecosDimmer",
     "compatibility": {
-        "version": "7.1"
+        "version": "8.2"
     },
-    "version": "1.0",
+    "version": "2.0",
     "build": 0,
     "date": 0
 }

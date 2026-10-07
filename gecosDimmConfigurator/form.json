@@ -1,0 +1,57 @@
+{
+    "elements": [
+        {
+            "type": "Label",
+            "caption": "Vorgaben für neu angelegte DimmAktoren (nach Änderung bitte übernehmen):"
+        },
+        {
+            "type": "Select",
+            "name": "DefaultProfileID",
+            "caption": "Dimm-Profil",
+            "options": []
+        },
+        {
+            "type": "CheckBox",
+            "name": "AutoPlace",
+            "caption": "Neue DimmAktoren versteckt unter der On/Off-Variable des Ausgangs ablegen"
+        }
+    ],
+    "actions": [
+        {
+            "type": "Configurator",
+            "name": "Dimmers",
+            "caption": "GeCoS 16-PWM Dimmausgänge",
+            "rowCount": 20,
+            "add": false,
+            "delete": false,
+            "columns": [
+                {
+                    "name": "name",
+                    "caption": "Name",
+                    "width": "auto"
+                },
+                {
+                    "name": "channel",
+                    "caption": "Kanal",
+                    "width": "80px"
+                },
+                {
+                    "name": "address",
+                    "caption": "Variablen",
+                    "width": "280px"
+                },
+                {
+                    "name": "profile",
+                    "caption": "Profil",
+                    "width": "180px"
+                }
+            ],
+            "values": []
+        },
+        {
+            "type": "Label",
+            "caption": "Nach dem Erstellen in der DimmAktor-Instanz noch die Taster (Input Triggers) eintragen."
+        }
+    ],
+    "status": []
+}

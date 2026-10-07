@@ -141,7 +141,10 @@ declare(strict_types=1);
 			$ids = IPS_GetInstanceListByModuleID(self::PROFILE_MODULE_ID);
 			if (count($ids) > 0) {
 				foreach (json_decode(IPS_GetProperty($ids[0], 'Profiles'), true) ?: [] as $profile) {
-					$names[(int) $profile['ID']] = $profile['Name'];
+					$id = (int) ($profile['ID'] ?? 0);
+					if ($id > 0) {
+						$names[$id] = (string) ($profile['Name'] ?? "Profil $id");
+					}
 				}
 			}
 			return $names;

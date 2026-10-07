@@ -107,7 +107,7 @@ declare(strict_types=1);
 
 			$options = [['caption' => 'Individuell (eigene Einstellungen)', 'value' => 0]];
 			foreach ($this->GetProfiles() as $profile) {
-				$options[] = ['caption' => sprintf('%s (ID %d)', $profile['Name'], $profile['ID']), 'value' => (int) $profile['ID']];
+				$options[] = ['caption' => sprintf('%s (ID %d)', $profile['Name'], $profile['ID']), 'value' => $profile['ID']];
 			}
 			if ($profileID > 0 && $this->GetProfile($profileID) === null) {
 				$options[] = ['caption' => sprintf('Profil %d (nicht gefunden)', $profileID), 'value' => $profileID];
@@ -266,13 +266,23 @@ declare(strict_types=1);
 			if ($instanceID == 0) {
 				return [];
 			}
-			return json_decode(IPS_GetProperty($instanceID, 'Profiles'), true) ?: [];
+			$profiles = [];
+			foreach (json_decode(IPS_GetProperty($instanceID, 'Profiles'), true) ?: [] as $profile) {
+				// Neue Zeilen haben bis zur ID-Vergabe der Profilverwaltung noch keine ID
+				$id = (int) ($profile['ID'] ?? 0);
+				if ($id > 0) {
+					$profile['ID'] = $id;
+					$profile['Name'] = (string) ($profile['Name'] ?? "Profil $id");
+					$profiles[] = $profile;
+				}
+			}
+			return $profiles;
 		}
 
 		private function GetProfile(int $profileID): ?array
 		{
 			foreach ($this->GetProfiles() as $profile) {
-				if ((int) $profile['ID'] == $profileID) {
+				if ($profile['ID'] == $profileID) {
 					return $profile;
 				}
 			}

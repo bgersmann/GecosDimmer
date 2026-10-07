@@ -21,14 +21,6 @@ declare(strict_types=1);
 
 			$profiles = json_decode($this->ReadPropertyString('Profiles'), true) ?: [];
 
-			// Neue Profile (ID 0) und doppelte IDs bekommen eine eindeutige ID.
-			// Ein erneutes IPS_ApplyChanges aus ApplyChanges heraus lehnt Symcon ab (re-entrant),
-			// daher erfolgt die Korrektur in einem eigenen Thread nach dem Übernehmen.
-			$check = $profiles;
-			if ($this->AssignMissingIDs($check)) {
-				$this->RegisterOnceTimer('FixProfileIDs', 'GDP_FixProfileIDs(' . $this->InstanceID . ');');
-			}
-
 			if (count(IPS_GetInstanceListByModuleID($this->GetModuleID())) > 1) {
 				$this->SetStatus(201);
 			} else {
@@ -36,11 +28,21 @@ declare(strict_types=1);
 			}
 			$this->SetSummary(sprintf('%d Profile', count($profiles)));
 
+			// Neue Profile (ohne ID) und doppelte IDs bekommen eine eindeutige ID.
+			// Ein erneutes IPS_ApplyChanges aus ApplyChanges heraus lehnt Symcon ab (re-entrant),
+			// daher erfolgt die Korrektur in einem eigenen Thread nach dem Übernehmen.
+			// Die Aktoren werden erst in diesem zweiten Durchlauf aktualisiert.
+			$check = $profiles;
+			if ($this->AssignMissingIDs($check)) {
+				$this->RegisterOnceTimer('FixProfileIDs', 'GDP_FixProfileIDs(' . $this->InstanceID . ');');
+				return;
+			}
+
 			// DimmAktoren mit Profil aktualisieren (Status/Zusammenfassung)
 			if (IPS_GetKernelRunlevel() == KR_READY) {
 				foreach (IPS_GetInstanceListByModuleID(self::ACTOR_MODULE_ID) as $actorID) {
-					if (IPS_GetProperty($actorID, 'ProfileID') > 0) {
-						IPS_ApplyChanges($actorID);
+					if (@IPS_GetProperty($actorID, 'ProfileID') > 0) {
+						@IPS_ApplyChanges($actorID);
 					}
 				}
 			}
@@ -52,20 +54,11 @@ declare(strict_types=1);
 
 			$names = [0 => 'Individuell'];
 			foreach (json_decode($this->ReadPropertyString('Profiles'), true) ?: [] as $profile) {
-				$names[(int) $profile['ID']] = $profile['Name'];
-			}
-			// Neue Zeilen erhalten direkt die nächste freie ID (Duplikate korrigiert ApplyChanges)
-			foreach ($form['elements'] as &$element) {
-				if (($element['name'] ?? '') == 'Profiles') {
-					foreach ($element['columns'] as &$column) {
-						if ($column['name'] == 'ID') {
-							$column['add'] = max(array_keys($names)) + 1;
-						}
-					}
-					unset($column);
+				$id = (int) ($profile['ID'] ?? 0);
+				if ($id > 0) {
+					$names[$id] = (string) ($profile['Name'] ?? "Profil $id");
 				}
 			}
-			unset($element);
 			$usage = [];
 			foreach (IPS_GetInstanceListByModuleID(self::ACTOR_MODULE_ID) as $actorID) {
 				$profileID = (int) IPS_GetProperty($actorID, 'ProfileID');

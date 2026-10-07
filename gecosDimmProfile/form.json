@@ -11,10 +11,6 @@
             "add": true,
             "delete": true,
             "rowCount": 8,
-            "sort": {
-                "column": "ID",
-                "direction": "ascending"
-            },
             "columns": [
                 {
                     "name": "ID",

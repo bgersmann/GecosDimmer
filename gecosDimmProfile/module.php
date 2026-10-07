@@ -19,29 +19,14 @@ declare(strict_types=1);
 			//Never delete this line!
 			parent::ApplyChanges();
 
-			// Neue Profile (ID 0) und doppelte IDs bekommen eine eindeutige ID
 			$profiles = json_decode($this->ReadPropertyString('Profiles'), true) ?: [];
-			$maxID = 0;
-			foreach ($profiles as $profile) {
-				$maxID = max($maxID, (int) ($profile['ID'] ?? 0));
-			}
-			$used = [];
-			$changed = false;
-			foreach ($profiles as &$profile) {
-				$id = (int) ($profile['ID'] ?? 0);
-				if ($id <= 0 || isset($used[$id])) {
-					$id = ++$maxID;
-					$profile['ID'] = $id;
-					$changed = true;
-				}
-				$used[$id] = true;
-			}
-			unset($profile);
 
-			if ($changed) {
-				IPS_SetProperty($this->InstanceID, 'Profiles', json_encode($profiles));
-				IPS_ApplyChanges($this->InstanceID);
-				return;
+			// Neue Profile (ID 0) und doppelte IDs bekommen eine eindeutige ID.
+			// Ein erneutes IPS_ApplyChanges aus ApplyChanges heraus lehnt Symcon ab (re-entrant),
+			// daher erfolgt die Korrektur in einem eigenen Thread nach dem Übernehmen.
+			$check = $profiles;
+			if ($this->AssignMissingIDs($check)) {
+				$this->RegisterOnceTimer('FixProfileIDs', 'GDP_FixProfileIDs(' . $this->InstanceID . ');');
 			}
 
 			if (count(IPS_GetInstanceListByModuleID($this->GetModuleID())) > 1) {
@@ -69,6 +54,18 @@ declare(strict_types=1);
 			foreach (json_decode($this->ReadPropertyString('Profiles'), true) ?: [] as $profile) {
 				$names[(int) $profile['ID']] = $profile['Name'];
 			}
+			// Neue Zeilen erhalten direkt die nächste freie ID (Duplikate korrigiert ApplyChanges)
+			foreach ($form['elements'] as &$element) {
+				if (($element['name'] ?? '') == 'Profiles') {
+					foreach ($element['columns'] as &$column) {
+						if ($column['name'] == 'ID') {
+							$column['add'] = max(array_keys($names)) + 1;
+						}
+					}
+					unset($column);
+				}
+			}
+			unset($element);
 			$usage = [];
 			foreach (IPS_GetInstanceListByModuleID(self::ACTOR_MODULE_ID) as $actorID) {
 				$profileID = (int) IPS_GetProperty($actorID, 'ProfileID');
@@ -84,6 +81,18 @@ declare(strict_types=1);
 				}
 			}
 			return json_encode($form);
+		}
+
+		/**
+		 * Vergibt fehlende/doppelte Profil-IDs und übernimmt die Änderung.
+		 */
+		public function FixProfileIDs(): void
+		{
+			$profiles = json_decode($this->ReadPropertyString('Profiles'), true) ?: [];
+			if ($this->AssignMissingIDs($profiles)) {
+				IPS_SetProperty($this->InstanceID, 'Profiles', json_encode($profiles));
+				IPS_ApplyChanges($this->InstanceID);
+			}
 		}
 
 		/**
@@ -105,6 +114,27 @@ declare(strict_types=1);
 			IPS_SetProperty($ActorID, 'ProfileID', $ProfileID);
 			IPS_ApplyChanges($ActorID);
 			return true;
+		}
+
+		private function AssignMissingIDs(array &$profiles): bool
+		{
+			$maxID = 0;
+			foreach ($profiles as $profile) {
+				$maxID = max($maxID, (int) ($profile['ID'] ?? 0));
+			}
+			$used = [];
+			$changed = false;
+			foreach ($profiles as &$profile) {
+				$id = (int) ($profile['ID'] ?? 0);
+				if ($id <= 0 || isset($used[$id])) {
+					$id = ++$maxID;
+					$profile['ID'] = $id;
+					$changed = true;
+				}
+				$used[$id] = true;
+			}
+			unset($profile);
+			return $changed;
 		}
 
 		private function GetModuleID(): string
